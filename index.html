@@ -1,0 +1,574 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xencruit - AI-Driven Interview Dashboard</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --secondary: #4f46e5;
+      --accent: #7c3aed;
+      --background: #f9fafb;
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --text-light: #6b7280;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --border: #e5e7eb;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+    }
+    
+    body {
+      background-color: var(--background);
+      color: var(--text);
+    }
+    
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+    
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background-color: var(--card-bg);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border-radius: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+    
+    .logo span {
+      color: var(--accent);
+    }
+    
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+    
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+    }
+    
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    .video-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .video-feed {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+      background-color: #000;
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+    
+    .video-feed img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .video-label {
+      position: absolute;
+      bottom: 0.5rem;
+      left: 0.5rem;
+      background-color: rgba(0,0,0,0.6);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+    }
+    
+    .video-metrics {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background-color: rgba(0,0,0,0.6);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+    }
+    
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+    
+    .metric-card {
+      background-color: var(--card-bg);
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 1rem;
+    }
+    
+    .metric-title {
+      font-size: 0.875rem;
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+    }
+    
+    .metric-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .progress-container {
+      width: 100%;
+      height: 0.5rem;
+      background-color: var(--border);
+      border-radius: 9999px;
+      margin-top: 0.5rem;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      border-radius: 9999px;
+    }
+    
+    .progress-bar.high {
+      background-color: var(--success);
+      width: 85%;
+    }
+    
+    .progress-bar.medium {
+      background-color: var(--warning);
+      width: 65%;
+    }
+    
+    .progress-bar.low {
+      background-color: var(--danger);
+      width: 35%;
+    }
+    
+    .analysis-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .analysis-item:last-child {
+      border-bottom: none;
+    }
+    
+    .analysis-label {
+      color: var(--text-light);
+    }
+    
+    .transcript-container {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 1rem;
+    }
+    
+    .transcript-message {
+      padding: 0.5rem 0;
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .transcript-time {
+      color: var(--text-light);
+      font-size: 0.875rem;
+      min-width: 60px;
+    }
+    
+    .transcript-speaker {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    
+    .insight-tag {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      background-color: rgba(79, 70, 229, 0.1);
+      color: var(--secondary);
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 1rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 0.25rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .btn:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .btn-outline {
+      background-color: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+    }
+    
+    .btn-outline:hover {
+      background-color: rgba(37, 99, 235, 0.1);
+    }
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .badge-success {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+    
+    .badge-warning {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+    
+    .badge-danger {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+    }
+    
+    .candidate-sidebar {
+      background-color: var(--card-bg);
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .candidate-info {
+      padding: 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .candidate-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 600;
+      margin: 0 auto 1rem auto;
+    }
+    
+    .candidate-name {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .candidate-position {
+      color: var(--text-light);
+      margin-bottom: 1rem;
+    }
+    
+    .skill-bar {
+      margin-bottom: 0.75rem;
+    }
+    
+    .skill-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.25rem;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="navbar">
+      <div class="logo">Xen<span>cruit</span></div>
+      <div class="user-menu">
+        <div>Interview #JD-2025-03-42</div>
+        <div class="user-avatar">HR</div>
+      </div>
+    </nav>
+    
+    <div class="main-grid">
+      <div class="main-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Live Interview</div>
+            <div class="badge badge-success">In Progress</div>
+          </div>
+          
+          <div class="video-container">
+            <div class="video-feed">
+              <img src="/api/placeholder/640/360" alt="Candidate video feed">
+              <div class="video-label">Candidate</div>
+              <div class="video-metrics">Eye contact: 78%</div>
+            </div>
+            <div class="video-feed">
+              <img src="/api/placeholder/640/360" alt="Interviewer video feed">
+              <div class="video-label">Interviewer</div>
+            </div>
+          </div>
+          
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-title">Engagement Level</div>
+              <div class="metric-value">85%</div>
+              <div class="progress-container">
+                <div class="progress-bar high"></div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-title">Speech Clarity</div>
+              <div class="metric-value">72%</div>
+              <div class="progress-container">
+                <div class="progress-bar medium"></div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-title">Sentiment Analysis</div>
+              <div class="metric-value">Positive</div>
+              <div class="progress-container">
+                <div class="progress-bar high"></div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-title">Confidence Level</div>
+              <div class="metric-value">68%</div>
+              <div class="progress-container">
+                <div class="progress-bar medium"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Real-time Transcript</div>
+            <button class="btn btn-outline">Export</button>
+          </div>
+          
+          <div class="transcript-container">
+            <div class="transcript-message">
+              <div class="transcript-time">0:01:23</div>
+              <div>
+                <span class="transcript-speaker">Interviewer:</span>
+                Can you tell me about a time when you had to deal with a difficult team situation?
+              </div>
+            </div>
+            <div class="transcript-message">
+              <div class="transcript-time">0:01:39</div>
+              <div>
+                <span class="transcript-speaker">Candidate:</span>
+                Yes, in my previous role as a project manager, we had a tight deadline for a client deliverable. Two team members were having disagreements about the approach, which was causing delays.
+              </div>
+            </div>
+            <div class="transcript-message">
+              <div class="transcript-time">0:02:12</div>
+              <div>
+                <span class="transcript-speaker">Candidate:</span>
+                I organized a focused meeting where each person could present their concerns objectively. I made sure we followed a structured discussion format that emphasized the project goals rather than personal preferences.
+              </div>
+            </div>
+            <div class="transcript-message">
+              <div class="transcript-time">0:02:45</div>
+              <div>
+                <span class="transcript-speaker">Candidate:</span>
+                The result was a compromise solution that incorporated the best elements of both approaches, and we delivered the project on time. This experience taught me the importance of addressing conflicts early and facilitating constructive dialogue.
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">AI-Driven Insights</div>
+          </div>
+          
+          <div>
+            <div class="insight-tag">Problem-solving skills</div>
+            <div class="insight-tag">Conflict resolution</div>
+            <div class="insight-tag">Leadership potential</div>
+            <div class="insight-tag">Team collaboration</div>
+            <div class="insight-tag">Positive communication style</div>
+          </div>
+          
+          <div style="margin-top: 1rem;">
+            <div class="analysis-item">
+              <div class="analysis-label">Response quality</div>
+              <div class="badge badge-success">Structured & complete</div>
+            </div>
+            <div class="analysis-item">
+              <div class="analysis-label">Non-verbal cues</div>
+              <div class="badge badge-warning">Moderate hand gestures</div>
+            </div>
+            <div class="analysis-item">
+              <div class="analysis-label">Response relevance</div>
+              <div class="badge badge-success">Highly relevant</div>
+            </div>
+            <div class="analysis-item">
+              <div class="analysis-label">Emotional tone</div>
+              <div class="badge badge-success">Confident & positive</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="sidebar">
+        <div class="candidate-sidebar">
+          <div class="candidate-info">
+            <div class="candidate-avatar">DDM</div>
+            <div class="candidate-name">Debojyoti De Majumder</div>
+            <div class="candidate-position">Senior Project Manager</div>
+            <button class="btn">View Resume</button>
+          </div>
+          
+          <div style="padding: 1.5rem;">
+            <h3 style="margin-bottom: 1rem;">AI Assessment</h3>
+            
+            <div class="skill-bar">
+              <div class="skill-header">
+                <span>Technical Knowledge</span>
+                <span>78%</span>
+              </div>
+              <div class="progress-container">
+                <div class="progress-bar high" style="width: 78%"></div>
+              </div>
+            </div>
+            
+            <div class="skill-bar">
+              <div class="skill-header">
+                <span>Communication Skills</span>
+                <span>85%</span>
+              </div>
+              <div class="progress-container">
+                <div class="progress-bar high" style="width: 85%"></div>
+              </div>
+            </div>
+            
+            <div class="skill-bar">
+              <div class="skill-header">
+                <span>Problem Solving</span>
+                <span>72%</span>
+              </div>
+              <div class="progress-container">
+                <div class="progress-bar medium" style="width: 72%"></div>
+              </div>
+            </div>
+            
+            <div class="skill-bar">
+              <div class="skill-header">
+                <span>Cultural Fit</span>
+                <span>90%</span>
+              </div>
+              <div class="progress-container">
+                <div class="progress-bar high" style="width: 90%"></div>
+              </div>
+            </div>
+            
+            <div class="skill-bar">
+              <div class="skill-header">
+                <span>Leadership</span>
+                <span>81%</span>
+              </div>
+              <div class="progress-container">
+                <div class="progress-bar high" style="width: 81%"></div>
+              </div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+              <div class="card-title" style="margin-bottom: 1rem;">Overall Score</div>
+              <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary);">82%</div>
+              <div style="color: var(--text-light);">Top 15% of candidates</div>
+            </div>
+            
+            <div style="margin-top: 2rem; display: flex; gap: 0.5rem;">
+              <button class="btn">Send Feedback</button>
+              <button class="btn btn-outline">Save Assessment</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
